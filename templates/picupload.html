@@ -1,0 +1,26 @@
+<html>
+   <body>
+       <script>
+       // 업로드 방 사진 미리보기 코드
+       function readURL(input) {
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			document.getElementById('preview').src = e.target.result;
+		};
+		reader.readAsDataURL(input.files[0]);
+	} else {
+		document.getElementById('preview').src = "";
+	}
+}
+       </script>
+      <form action = "http://117.17.189.6:60008/fileUpload" method = "POST"
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" onchange="readURL(this);" />
+         <input type = "submit"/>
+      </form>
+       <p>
+            <img id="preview" width="275" height="275">
+        </p>
+   </body>
+</html>
