@@ -26,105 +26,12 @@
         
         
 <script language='javascript'>
-<!--
- function rowDel(obj)
- {
-     var tr = obj.parentNode.parentNode;
-     tr.parentNode.removeChild(tr);
- }
-//-->
-</script>
-        
-        
-        
-    </head>
 
-    <body id="page-top">
-        <!-- Navigation-->
-        <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
-        <nav id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand"><a href="#page-top">메뉴</a></li>
-                <li class="sidebar-nav-item"><a href="#page-top">Home</a></li>
-                <li class="sidebar-nav-item"><a href="#about">방 사진</a></li>
-                <li class="sidebar-nav-item"><a href="#services">아이템</a></li>
-                <li class="sidebar-nav-item"><a href="#portfolio">Portfolio</a></li>
-                <li class="sidebar-nav-item"><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-        <!-- Header-->
-        <header class="masthead d-flex align-items-center">
-            <div class="container px-4 px-lg-5 text-center">
-                <h1 class="mb-1">AI Interior Advisor</h1>
-                <h3 class="mb-5"><em>당신의 방을 조금 더 아름답게!</em></h3>
-                <a class="btn btn-primary btn-xl" href="#about">시작하기</a>
-            </div>
-        </header>
-        <!-- 방 사진 업로드-->
-        <section class="content-section bg-light" id="about">
-            <div class="container px-4 px-lg-5 text-center">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-10">
-                        <h3 class="text-secondary mb-0">방 Level</h3>
-                        <h2>현재 당신의 방 사진을 올려주세요!</h2>
-                        <p class="lead mb-5">
-                            방 사진은 당신이 추구하는 스타일을 분석하여 가장 유사한 스타일을 추천하는데 사용됩니다.
-                        </p>
-                        
-                        <script>
-       // 업로드 방 사진 미리보기 코드
-       function readURL(input) {
-	if (input.files && input.files[0]) {
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			document.getElementById('preview').src = e.target.result;
-		};
-		reader.readAsDataURL(input.files[0]);
-	} else {
-		document.getElementById('preview').src = "";
-	}
-}
-       </script>
-      <form action = "http://117.17.189.6:60008/fileUpload" method = "POST"
-         enctype = "multipart/form-data">
-         <input type = "file" name = "file" onchange="readURL(this);" />
-
-       <p>
-            <img id="preview" width="275" height="275">
-        </p>
-                        
-                        
-                        
-                        
-                        
-                        <a class="btn btn-dark btn-xl" href="#services">다음</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- 아이템 업로드-->
-        <section class="content-section bg-primary text-white text-center" id="services">
-            <div class="container px-4 px-lg-5">
-                <div class="content-section-heading">
-                    <h3 class="text-secondary mb-0">소품 Level</h3>
-                    <h2 class="mb-5">당신의 방에 있는 소품들을 알려주세요!</h2>
-                </div>
-                <div class="row gx-4 gx-lg-5">
-                     <p class="lead mb-5">
-                            아이템 정보를 알려주시면 해당 아이템들과 잘 어울리는 인테리어 소품들을 알려드릴게요!(삐리비릿~)
-                        </p>
-                    
-                    
-                    <!-- 업로드 form 마무리-->
-                     <!--  <input type="text" name="num"> -->
-
-                        
-  <script>
-  $(function() { //화면 다 뜨면 시작
-		//DB쿼리 조작 없이 초성 검색을 하기 위해서는 우선 DB에 있는 항목들을 다 가지고 와야한다.
-		//즉 너무 많은 수가 있으면 클라이언트 측이 느려질 수 있다는 점.
-		//하지만 DB쿼리를 조작해서 서버에서 초성검색을 하는 방식에 비해 서버에는 무리가 없다.
-		// ajax로 미리 검색어 목록을 다 가지고 온다.
+    $(function() { //화면 다 뜨면 시작
+        //DB쿼리 조작 없이 초성 검색을 하기 위해서는 우선 DB에 있는 항목들을 다 가지고 와야한다.
+        //즉 너무 많은 수가 있으면 클라이언트 측이 느려질 수 있다는 점.
+        //하지만 DB쿼리를 조작해서 서버에서 초성검색을 하는 방식에 비해 서버에는 무리가 없다.
+        // ajax로 미리 검색어 목록을 다 가지고 온다.
 		$.ajax({
 			type : 'get',
 			url : "/json",
@@ -197,83 +104,200 @@
 			$( "#searchInput" ).autocomplete( "search", Hangul.disassemble(input).join("").replace(/ /gi, "") );	//자모 분리후 띄어쓰기 삭제
 		})
 	});
-  </script>
+
+    function rowDel(obj){
+        var tr = obj.parentNode.parentNode;
+        tr.parentNode.removeChild(tr);
+    }
+    
+    // onsubmit 함수 테이블 data 가져오기
+    function getTable(){
+        var rows = document.getElementById("member_table").getElementsByTagName("tr");
+        console.log(rows.length);	// tbody tr 개수 = 2
+        var itemlist =[] ;  
+
+        // tr만큼 루프돌면서 컬럼값 접근
+        for( var r=1; r<rows.length; r++ ){
+            var cells = rows[r].getElementsByTagName("td");
+
+            var cell_1 = cells[1].firstChild.data;		// item_id
+            var cell_2 = cells[2].firstChild.data;		// 제품명
+            var cell_3 = cells[3].firstChild.data;		// 회사명
+
+            console.log(cell_1);	// 2123, 12332
+            console.log(cell_2);	// 
+            console.log(cell_3);	// 
+            itemlist = itemlist +" "+cell_1;  
+        }
+        //alert(itemlist);
+        $('#itemlist').val(itemlist);  
+    }
+
+    // 업로드 방 사진 미리보기 코드
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            document.getElementById('preview').src = "";
+        }
+    }
+       
+</script>
+
+        
+    </head>
+
+    <body id="page-top">
+        <!-- Navigation-->
+        <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
+        <nav id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand"><a href="#page-top">메뉴</a></li>
+                <li class="sidebar-nav-item"><a href="#page-top">Home</a></li>
+                <li class="sidebar-nav-item"><a href="#about">방 사진</a></li>
+                <li class="sidebar-nav-item"><a href="#services">아이템</a></li>
+                <li class="sidebar-nav-item"><a href="#portfolio">분석 시작</a></li>
+                <li class="sidebar-nav-item"><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <!-- Header-->
+        <header class="masthead d-flex align-items-center">
+            <div class="container px-4 px-lg-5 text-center">
+                <h1 class="mb-1">AI Interior Advisor</h1>
+                <h3 class="mb-5"><em>당신의 방을 조금 더 아름답게!</em></h3>
+                <a class="btn btn-primary btn-xl" href="#about">시작하기</a>
+            </div>
+        </header>
+        <!-- 방 사진 업로드-->
+        <section class="content-section bg-light" id="about">
+            <div class="container px-4 px-lg-5 text-center">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-10">
+                        <h3 class="text-secondary mb-0">방 Level</h3>
+                        <h2>현재 당신의 방 사진을 올려주세요!</h2>
+                        <p class="lead mb-5">
+                            방 사진은 당신이 추구하는 스타일을 분석하여 가장 유사한 스타일을 추천하는데 사용됩니다.
+                        </p>
+                        
+                        
+      <form action = "http://117.17.189.6:60008/fileUpload" method = "POST" onsubmit="getTable();"
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" onchange="readURL(this);" />
+
+       <p>
+            <img id="preview" width="275" height="275">
+        </p>
+          <input type = "hidden" name = "itemlist" id = "itemlist" />              
+
+                        
+                        <a class="btn btn-dark btn-xl" href="#services">다음</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 아이템 업로드-->
+        <section class="content-section bg-primary text-white text-center" id="services">
+            <div class="container px-4 px-lg-5">
+                <div class="content-section-heading">
+                    <h3 class="text-secondary mb-0">소품 Level</h3>
+                    <h2 class="mb-5">당신의 방에 있는 소품들을 알려주세요!</h2>
+                </div>
+                <div class="row gx-4 gx-lg-5">
+                     <p class="lead mb-5">
+                            아이템 정보를 알려주시면 해당 아이템들과 잘 어울리는 인테리어 소품들을 알려드릴게요!(삐리비릿~)
+                        </p>
+                    
+                    
+                    
+                    <!-- 업로드 form 마무리-->
+                     <!--  <input type="text" name="num"> -->
+
+     
 <body>
  
 <div class="ui-widget">
-  <label for="tags">Tags: </label>
+  <label for="tags"> 검색창: </label>
   <input id="searchInput">
-  <input type="button" id="execute" value="execute">
+  <input type="button" id="execute" value="찾기">
+  
 </div>
                                         
-        <script>
-            //버튼을 누르면 Auto를 ajax로 전송해 DB에서 해당 아이템 정보를 받아와 테이블에 출력
-        $('#execute').click(function(){
-            var autoName = $('#searchInput').val();
+<script>
+    //버튼을 누르면 Auto를 ajax로 전송해 DB에서 해당 아이템 정보를 받아와 테이블에 출력
+    $('#execute').click(function(){
+        var autoName = $('#searchInput').val();
 
-            var postdata = {
-                'Auto' : autoName
+        var postdata = {
+            'Auto' : autoName
+        }
+        $.ajax({
+            type: 'POST',
+            url: "/query",
+            data: JSON.stringify(postdata),
+            dataType : 'JSON',
+            contentType: "application/json",
+            success: function(data){
+                //alert('성공! 데이터 값:' + data.Title)
+                //var arr = JSON.parse(data);
+
+
+                var arr = data;
+                var htmlCode = '';
+
+                htmlCode += '<tr class="success">'
+                htmlCode += '<td><img src="static/assets/item/'+arr.Item_url+'.jpg" id="itempic" width="75" height="75"></td>'
+                htmlCode += '<td>'+arr.Item_id+'</td>'
+                htmlCode += '<td>'+arr.Title+'</td>'
+                htmlCode += '<td>'+arr.Company+'</td>'
+                htmlCode += '<td class="deleteBtn"><input type="button" id="1" id="delete" value="delete" onclick="rowDel(this);" ></td>'
+                htmlCode += '</tr>'
+
+                searchInput.value = null
+                $('#member_table').append(htmlCode);
+                $('#loadingImg').hide();
+
+            },
+            error: function(request, status, error){
+                alert('ajax 통신 실패');
+                alert(error);
             }
-            $.ajax({
-                type: 'POST',
-                url: "/query",
-                data: JSON.stringify(postdata),
-                dataType : 'JSON',
-                contentType: "application/json",
-                success: function(data){
-                    alert('성공! 데이터 값:' + data.Title)
-                    //var arr = JSON.parse(data);
- 
-                    
-                    var arr = data;
-                    var htmlCode = '';
-
-
-                    htmlCode += '<tr>'
-                    htmlCode += '<td>'+arr.Item_url+'</td>'
-                    htmlCode += '<td>'+arr.Title+'</td>'
-                    htmlCode += '<td>'+arr.Company+'</td>'
-                    htmlCode += '<td class="deleteBtn"><input type="button" id="1" id="delete" value="delete" onclick="rowDel(this);" ></td>'
-                    htmlCode += '</tr>'
-                    
-                    searchInput.value = null
-                    $('#member_table').append(htmlCode);
-                    $('#loadingImg').hide();
-
-                },
-                error: function(request, status, error){
-                    alert('ajax 통신 실패')
-                    alert(error);
-                }
-            })
         })
-        
-        
-    </script>
+    })
+
+
+</script>
     
+    <div style="padding:10px;"> 
     <Table class="table table-striped table-bordered table-hover"  id="member_table">   <!--table 속성을 지정해보자-->
     <thead>
             <tr>
-            <th>idx</th>
+            <th>Image</th>
+            <th>Item_id</th>
             <th>제품명</th>
             <th>제조사</th>
             <th>Delete</th>
             </tr>
     </thead>
-</Table>
-
-    
-    
+    </Table>
+    </div>
+   
+   
                 </div>
             </div> <a class="btn btn-dark btn-xl" href="#portfolio">다음</a>
         </section>
         <!-- Callout-->
         <section class="callout" id="portfolio">
             <div class="container px-4 px-lg-5 text-center">
-                <h2 class="mx-auto mb-5">
+                <h3 class="mx-auto mb-5">
                     자, 이제 준비되셨나요?
-                </h2>
-                        <input type = "submit" class="btn btn-primary btn-xl" value="분석 시작!">
+                </h3>
+                        <input type = "submit" class="btn btn-primary btn-xl" value="분석 시작!" >
+        
                     
       </form>
             </div>
