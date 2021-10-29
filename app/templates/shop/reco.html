@@ -11,8 +11,30 @@
     <div>
         <p>연결이 성공되면 아래에 추천 아이템이 뜰꺼야!</p>
         <p>------------------------------------</p>
-                {% for value in ncf %}
-                    <p>{{value}}</p>
+                {% for value in room %}
+             <div class="col mb-5"> <!-- 각 아이템 박스 영역 (눈에 안보이는 공간 차지)기준 -->
+                        <div class="card h-100"> <!-- 각 아이템 박스 (눈에 보이는)기준 -->
+                            <li>
+                             {{ loop.index }} 번째 추천 아이템!
+                           </li>
+                            <!-- Product image-->
+                            <img class="card-img-top" src='static/assets/item/{{value}}.jpg' id="itempic" width="75" height="75" alt="{{value}}">
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">Fancy Product {{value}}</h5>
+                                    <!-- Product price-->
+                                    $40.00 - $80.00
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            </div>
+                        </div>
+                    </div>  
+        
         <p>------------------------------------</p>
                 {% endfor %}
 

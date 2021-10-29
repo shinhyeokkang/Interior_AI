@@ -39,7 +39,7 @@ class Ncf():
         sumdict = dict(sorted(sumdict.items(), key=lambda x: x[1], reverse=True)) #prediction 기준 내림차순
         #print(sumdict)
         matched_user_order = list(sumdict.keys())
-        print('similar users:', matched_user_order[:10])
+        #print('similar users:', matched_user_order[:10])
 
         #유사 유저들의 아이템 추천
         topten_users = matched_user_order[:10]
@@ -62,9 +62,9 @@ class Ncf():
         print()
         print()
         sumdict2 = dict(sorted(sumdict2.items(), key=lambda x: x[1], reverse=True)) #prediction 기준 내림차순
-        print(sumdict2)
+        #print(sumdict2)
 
         recommend_item_lst = list(sumdict2.keys())
-        print('recommend:', recommend_item_lst[:topnum])
+        print('recommend NCF items:', recommend_item_lst[:topnum])
         
         return recommend_item_lst[:topnum]

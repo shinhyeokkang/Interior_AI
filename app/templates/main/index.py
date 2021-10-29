@@ -22,12 +22,19 @@ tmp_list = []
 list_results = []
 master_dict = {}
 df = pd.DataFrame(columns = ['0','1','2','3','Item_id','Item_url', 'Title', 'Company'])
+roomlist = []
+ncflist = []
+cnnlist = []
  
 main= Blueprint('main', __name__, url_prefix='/')
  
 @main.route('/', methods=['GET'])
 def index():
     # /main/index.html은 사실 /project_name/app/templates/main/index.html을 가리킵니다.
+    return render_template('/main/index.html')
+
+@main.route('/shop', methods=['GET'])
+def shop():
     return render_template('/shop/shop.html')
 
 
@@ -43,22 +50,25 @@ def upload_file():
         f = request.files['file']#저장할 경로 + 파일명
         f.save(f'uploads/{secure_filename(f.filename)}') # /upload 폴더에 저장
         image = Image.open('/home/jmkim/capstone/flask/uploads/'+f.filename)
+        global roomlist
         roomlist = list(cnn.reco_items(image,New=True).loc[:,'Item_url'])#리턴: Item_url
-        print(roomlist)
-        
+                
         
         #item분석
         item = request.form['itemlist']
         item_id_list = list(map(int, item.split(" ")[1:]))#공백제거
         #ncf
+        global ncflist
         ncflist = ncf.reco_items(item_id_list, 30)#리턴: Item_id
-        #cnn
-        predVal = df[df['Item_id'].isin(item_id_list)].iloc[:,:4].values
-        cnnlist = list(cnn.reco_items(predVal,New=False).loc[:,'Item_url'])#리턴: Item_url 
+        
+        #cnn - 이거 뭐하려고 한건지 설명좀 -아이템 항목 CNN인가
+        #predVal = df[df['Item_id'].isin(item_id_list)].iloc[:,:4].values
+        #global cnnlist
+        #cnnlist = list(cnn.reco_items(predVal,New=False).loc[:,'Item_url'])#리턴: Item_url 
         
 
         
-    return render_template('/shop/reco.html')#, ncf=ncflist,room=roomlist)
+    return render_template('/shop/shop.html', room = roomlist[:30], ncf=ncflist)
     
 @main.route('/json', methods = ['GET'])
 def json_file():
@@ -115,10 +125,83 @@ def query():
     global df
     df = pd.concat([df,df_new],ignore_index=True)
     #print("DataFrame 입니다\n", df, "DataFrame 입니다\n")
-   
-   # 사진파일 item_url로 검색해서 같이 보내줘야함 
     
     return jsonify(list_results[0])
+
+@main.route('/queryCNN', methods = ['POST'])
+def queryCNN():
+    #query 할 Item_url을 받아오는 코드
+    query_list = request.get_json()
+    print(query_list, "room-item_url 출력")
+    #itemlist 를 MongoDB에서 받아오는 쿼리
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client.ItemDB
+    collection = db.ItemCollections
+    resultlist_CNN = []
+    for item in query_list:
+        result = collection.find({'Item_url':item}, {'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Rate':1, 'Class1':1,'Class2':1,'Class3':1,'Class4':1,})
+        resultlist_CNN.append(result)
+    client.close()
+    
+    print(resultlist_CNN, "find CNN 결과 출력")
+    #NCF 및 CNN 학습용 Dict에 추가 (Json 형식 그대로 유지, 추후 delete시 검색 삭제 용이하게)
+
+    return dumps(resultlist_CNN)
+
+@main.route('/queryNCF', methods = ['POST'])
+def queryNCF():
+    #query 할 Item_url을 받아오는 코드
+    query_list = request.get_json()
+    print(query_list, "ncflist-item_id 출력")
+    #itemlist 를 MongoDB에서 받아오는 쿼리
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client.ItemDB
+    collection = db.ItemCollections
+    resultlist_NCF = []
+    for item in query_list:
+        result = collection.find({"Item_id":item},{'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Rate':1, 'Class1':1,'Class2':1,'Class3':1,'Class4':1,})
+        
+        resultlist_NCF.append(result)
+    client.close()
+    
+    
+    print(resultlist_NCF, "find NCF 결과 출력")
+    
+    return dumps(resultlist_NCF)
+
+@main.route('/category', methods = ['POST'])
+def category():
+    query = request.get_json()
+    queryName = query['Class2']
+    print(queryName)
+    
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client.ItemDB
+    collection = db.ItemCollections
+    
+    global roomlist
+    resultlist_ALL = []
+    for item in roomlist:
+        result = collection.find({'Item_url':item, 'Class2':queryName},{'_id':0,'Item_id':1,'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Rate':1})
+        if not result.count() == 0:
+            resultlist_ALL.append(result)
+            print("Added!CNN")
+            if len(resultlist_ALL) == 20:
+                print("Added!CNN")
+                break;
+    
+    global ncflist
+    for item in ncflist:
+        result = collection.find({'Item_id':item, 'Class2':queryName},{'_id':0,'Item_id':1,'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Rate':1})
+        if not result.count() == 0:
+            resultlist_ALL.append(result)
+            if len(resultlist_ALL) == 40:
+                print("Added!NCF")
+                break;   
+    client.close()
+    print(resultlist_ALL, "필터링 결과 출력")
+
+    return dumps(resultlist_ALL)
 
 @main.route('/shop', methods = ['GET'])
 def test():
