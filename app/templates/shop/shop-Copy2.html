@@ -43,15 +43,12 @@
                             </ul>
                         </li>
                     </ul>
-                      <a class="btn btn-primary btn-xl" href="https://forms.gle/sMb2U1anm8keR6wLA">설문조사!</a>
-                        
-                        <button class="btn btn-outline-dark">
+                    <form class="d-flex">
+                        <button class="btn btn-outline-dark" type="submit">
                             <i class="bi-cart-fill me-1"></i>
                             Cart
                             <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
                         </button>
-                    <form class="d-flex">
-                      
                     </form>
                 </div>
             </div>
@@ -98,9 +95,7 @@
     //버튼을 누르면 Auto를 ajax로 전송해 DB에서 해당 아이템 정보를 받아와 테이블에 출력
     $('#filterBtn').click(function(){
         var postdata = {
-            'Class2' : $('#cat1').val(),
-            'roomdata' : {{room}},
-            'ncfdata' : {{ncf}}
+            'Class2' : $('#cat1').val()
         }
         $.ajax({
             type: 'POST',
@@ -109,7 +104,7 @@
             dataType : 'JSON',
             contentType: "application/json",
             success: function(data){
-                alert('성공! 필터 데이터 값:' + data[1][0].Title)
+                //alert('성공! 필터 데이터 값:' + data[1][0].Title)
                 
                 var arr = data;
                 var htmlCode_C = '';
@@ -179,7 +174,7 @@
 
             },
             error: function(request, status, error){
-                alert('ajax 통신 실패');
+                //alert('ajax 통신 실패');
                 //alert(error);
             }
         })
@@ -280,9 +275,8 @@
 
             },
             error: function(request, status, error){
-                alert('CNN ajax 통신 실패 ', error);
-                console.log('CNN ajax 통신 실패 : ', error);
-                
+                //alert('ajax 통신 실패');
+                //alert(error);
             }
         });
     });
@@ -337,8 +331,8 @@
 
             },
             error: function(request, status, error){
-                alert('NCF ajax 통신 실패 ', error);
-                console.log('CNN ajax 통신 실패 : ', error);
+                //alert('ajax 통신 실패');
+                //alert(error);
             }
         });
     });
@@ -387,10 +381,7 @@
         </section>
         <!-- Footer-->
         <footer class="py-4 bg-yellow">
-           
-            <div class="container"><p class="m-0 text-center text-black">
-                 <a class="btn btn-primary btn-xl" href="https://forms.gle/sMb2U1anm8keR6wLA">설문조사!</a>
-                Copyright &copy; ITM15 Capstone </p></div>
+            <div class="container"><p class="m-0 text-center text-black">Copyright &copy; ITM15 Canpstone </p></div>
         </footer>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>

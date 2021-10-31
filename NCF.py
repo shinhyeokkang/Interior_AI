@@ -9,7 +9,8 @@ for gpu in gpus:
 # 2. 모델 불러오기
 #from tf.keras.models import load_model
 model = tf.keras.models.load_model('ncf_model_home1.h5')
-
+TOTAL_USER = 33044
+TOTAL_ITEM = 59594
 # 3. 모델 사용하기
 
 #inputlist = [4398,7631,11383,13123,19865,19866,20530]
@@ -21,7 +22,7 @@ class Ncf():
 
         for initem in inputlist:
             # user 여러명에 대한 한 item prediction 예시
-            user_id = np.arange(33044).reshape(-1,1) # 전체 유저의 수
+            user_id = np.arange(TOTAL_USER).reshape(-1,1) # 전체 유저의 수
             user_candidate_item = initem # 앞에 8개가 그대로 유지되어야함
             item_input = np.full(len(user_id), user_candidate_item, dtype='int32').reshape(-1,1) #[0,0,0,0,0] 만듬
 
@@ -30,15 +31,15 @@ class Ncf():
 
             predictions = predictions.flatten().tolist()
             #print(predictions)
-            user_to_pre_score = {user[0]: pre for user, pre in zip(user_id, predictions)} # 후보 아이템 별 예측값
+            user_to_pre_score = {user[0]: pre for user, pre in zip(user_id, predictions)} # 후보 유저 별 initem에 어울리는 정도 예측값
             #print(type(user_to_pre_score))
-            sumdict = Counter(sumdict)+Counter(user_to_pre_score)
+            sumdict = Counter(sumdict)+Counter(user_to_pre_score) # 각 유저별 점수를 매 initem마다 구하고 합산 
 
         print()
         print()
         sumdict = dict(sorted(sumdict.items(), key=lambda x: x[1], reverse=True)) #prediction 기준 내림차순
         #print(sumdict)
-        matched_user_order = list(sumdict.keys())
+        matched_user_order = list(sumdict.keys()) # 입력받은 방 안의 아이템들에 어울리는 user (해당 아이템조합을 가장 많이 포함하는)순으로 정렬
         #print('similar users:', matched_user_order[:10])
 
         #유사 유저들의 아이템 추천
@@ -48,10 +49,10 @@ class Ncf():
         for inuser in topten_users:
             # user 한 명에 대한 모든 item prediction 예시
             user_id = inuser
-            user_candidate_item = np.arange(59594).reshape(-1,1) # 전체 아이템의 수
+            user_candidate_item = np.arange(TOTAL_ITEM).reshape(-1,1) # 전체 아이템의 수
             user_input = np.full(len(user_candidate_item), user_id, dtype='int32').reshape(-1,1) #[0,0,0,0,0] 만듬
 
-            predictions = model.predict([user_input, user_candidate_item])
+            predictions = model.predict([user_input, user_candidate_item]) #유사 user 한 명에 대한 전체 아이템 prediction 
             #print(predictions)
 
             predictions = predictions.flatten().tolist()
@@ -65,6 +66,6 @@ class Ncf():
         #print(sumdict2)
 
         recommend_item_lst = list(sumdict2.keys())
-        print('recommend NCF items:', recommend_item_lst[:topnum])
+        #print('recommend NCF items:', recommend_item_lst[:topnum])
         
         return recommend_item_lst[:topnum]

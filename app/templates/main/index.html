@@ -121,12 +121,12 @@
             var cells = rows[r].getElementsByTagName("td");
 
             var cell_1 = cells[1].firstChild.data;		// item_id
-            var cell_2 = cells[2].firstChild.data;		// 제품명
-            var cell_3 = cells[3].firstChild.data;		// 회사명
+            //var cell_2 = cells[2].firstChild.data;		// 제품명
+            //var cell_3 = cells[3].firstChild.data;		// 회사명
 
-            console.log(cell_1);	// 2123, 12332
-            console.log(cell_2);	// 
-            console.log(cell_3);	// 
+            console.log('item_id 전송 : ',cell_1);	// 2123, 12332
+            //console.log(cell_2);	// 
+            //console.log(cell_3);	// 
             itemlist = itemlist +" "+cell_1;  
         }
         //alert(itemlist);
@@ -137,8 +137,9 @@
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            
+            //alert(document.getElementById('preview'));
             reader.onload = function(e) {
+                
                 document.getElementById('preview').src = e.target.result;
             };
             reader.readAsDataURL(input.files[0]);
@@ -225,7 +226,6 @@
   <input id="searchInput">
   <input type="button" id="execute" value="찾기">
   
-  
 </div>
                                        
 <script>
@@ -265,13 +265,12 @@
             },
             error: function(request, status, error){
                 alert('ajax 통신 실패');
-                alert(error);
+                consol.log(error);
             }
         })
     })
-
-
 </script>
+
 
     <div style="padding:10px;"> 
     <Table class="table table-striped table-bordered table-hover"  id="member_table">   <!--table 속성을 지정해보자-->
@@ -287,7 +286,66 @@
     </Table>
     </div>
    
-   
+      <!-- DB에 없는 아이템 넣는 테이블-->
+       <div style="padding:10px;"> 
+    
+            <h6 class="text-secondary mb-0">찾는 아이템이 없으시다면, 직접 추가하실수 있습니다 (선택사항)</h6>
+           <div class="container px-4 px-lg-5">
+           <div class="row gx-4 gx-lg-5">
+            <div class="ui-widget">
+  <input type="button" id="additem" value="아이템 추가">
+            </div>
+             </div> </div>
+    <Table class="table table-striped table-bordered table-hover"  id="extra_table">   <!--table 속성을 지정해보자-->
+    <thead>
+            <tr>
+            <th>Image</th>
+            <th>Add</th>
+            <th>Delete</th>
+            </tr>
+    </thead>
+    </Table>
+    </div>
+    
+        
+<script>
+    //버튼을 누르면 유저입력 아이템을 받을 수 있는 테이블 행 추가 
+    $('#additem').click(function(){
+                var htmlCode = '';
+
+                htmlCode += '<tr class="success">'
+                htmlCode += '<td><img id="itempreview" width="75" height="75"></td>'
+                htmlCode += '<td><input type = "file" name = "file" onchange="readURL2(this);" /></td>'
+                htmlCode += '<td class="deleteBtn"><input type="button" id="1" id="delete" value="delete" onclick="rowDel2(this);" ></td>'
+                htmlCode += '</tr>'
+
+                $('#extra_table').append(htmlCode);
+
+    })
+    
+    function rowDel2(obj){
+        var tr = obj.parentNode.parentNode;
+        tr.parentNode.removeChild(tr);
+    }
+    
+        // 업로드 아이템 사진 미리보기 코드
+    function readURL2(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            //alert(input.parentNode.parentNode.firstChild.firstChild);
+            reader.onload = function(e) {
+                input.parentNode.parentNode.firstChild.firstChild.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            input.parentNode.parentNode.firstChild.firstChild.src = "";
+        }
+    }
+    
+    
+    
+</script>
+    
                 </div>
             </div> <a class="btn btn-dark btn-xl" href="#portfolio">다음</a>
         </section>
@@ -297,7 +355,7 @@
                 <h3 class="mx-auto mb-5">
                     자, 이제 준비되셨나요?
                 </h3>
-                        <input type = "submit" class="btn btn-primary btn-xl" value="분석 시작!" >
+                        <input type = "submit" class="btn btn-primary btn-xl" value="분석 시작!" href="#waiting" >
         
                     
       </form>
@@ -307,16 +365,16 @@
         <section class="content-section" id="waiting">
             <div class="container px-4 px-lg-5">
                 <div class="content-section-heading text-center">
-                    <h3 class="text-secondary mb-0">Portfolio</h3>
-                    <h2 class="mb-5">Recent Projects</h2>
+                    <h3 class="text-secondary mb-0">심심하시죠?</h3>
+                    <h2 class="mb-5">40~50초만 기다려주시면 결과가 출력됩니다!</h2>
                 </div>
                 <div class="row gx-0">
                     <div class="col-lg-6">
                         <a class="portfolio-item" href="#!">
                             <div class="caption">
                                 <div class="caption-content">
-                                    <div class="h2">Stationary</div>
-                                    <p class="mb-0">A yellow pencil with envelopes on a clean, blue backdrop!</p>
+                                    <div class="h2">NCF란?</div>
+                                    <p class="mb-0">당신의 방에 있는 아이템을 사용하는 다른 사용자가 자주 사용하는 아이템들을 추천해줘요.</p>
                                 </div>
                             </div>
                             <img class="img-fluid" src="static/assets/img/portfolio-1.jpg" alt="..." />
@@ -326,8 +384,8 @@
                         <a class="portfolio-item" href="#!">
                             <div class="caption">
                                 <div class="caption-content">
-                                    <div class="h2">Ice Cream</div>
-                                    <p class="mb-0">A dark blue background with a colored pencil, a clip, and a tiny ice cream cone!</p>
+                                    <div class="h2">방 사진은 왜 필요한거죠?</div>
+                                    <p class="mb-0">당신의 방의 스타일을 AI가 분석하여 그에 어울리는 아이템을 추천하기 위해서랍니다.</p>
                                 </div>
                             </div>
                             <img class="img-fluid" src="static/assets/img/portfolio-2.jpg" alt="..." />
@@ -337,8 +395,8 @@
                         <a class="portfolio-item" href="#!">
                             <div class="caption">
                                 <div class="caption-content">
-                                    <div class="h2">Strawberries</div>
-                                    <p class="mb-0">Strawberries are such a tasty snack, especially with a little sugar on top!</p>
+                                    <div class="h2">심심하신가요?</div>
+                                    <p class="mb-0">오른쪽의 글을 읽으면 시간이 금방갈겁니다!</p>
                                 </div>
                             </div>
                             <img class="img-fluid" src="static/assets/img/portfolio-3.jpg" alt="..." />
@@ -348,8 +406,8 @@
                         <a class="portfolio-item" href="#!">
                             <div class="caption">
                                 <div class="caption-content">
-                                    <div class="h2">Workspace</div>
-                                    <p class="mb-0">A yellow workspace with some scissors, pencils, and other objects.</p>
+                                    <div class="h2">여전히 심심하신가요?</div>
+                                    <p class="mb-0">왼쪽의 글을 읽으면 시간이 금방갈걸요?</p>
                                 </div>
                             </div>
                             <img class="img-fluid" src="static/assets/img/portfolio-4.jpg" alt="..." />
@@ -366,12 +424,7 @@
                 <a class="btn btn-xl btn-dark" href="#!">Look at Me!</a>
             </div>
         </section>
-        <!-- Map-->
-        <div class="map" id="contact">
-            <iframe src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A&amp;output=embed"></iframe>
-            <br />
-            <small><a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A"></a></small>
-        </div>
+      
         <!-- Footer-->
         <footer class="footer text-center">
             <div class="container px-4 px-lg-5">
@@ -380,13 +433,13 @@
                         <a class="social-link rounded-circle text-white mr-3" href="#!"><i class="icon-social-facebook"></i></a>
                     </li>
                     <li class="list-inline-item">
-                        <a class="social-link rounded-circle text-white mr-3" href="#!"><i class="icon-social-twitter"></i></a>
+                        <a class="social-link rounded-circle text-white mr-3" href="#!"><i class="icon-social-linkedin"></i></a>
                     </li>
                     <li class="list-inline-item">
-                        <a class="social-link rounded-circle text-white" href="#!"><i class="icon-social-github"></i></a>
+                        <a class="social-link rounded-circle text-white" href="https://github.com/shinhyeokkang/Interior_AI"><i class="icon-social-github"></i></a>
                     </li>
                 </ul>
-                <p class="text-muted small mb-0">Copyright &copy; Your Website 2021</p>
+                <p class="text-muted small mb-0">Copyright &copy; ITM Capstone Project 2021</p>
             </div>
         </footer>
         <!-- Scroll to Top Button-->
