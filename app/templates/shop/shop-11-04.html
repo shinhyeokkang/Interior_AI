@@ -92,51 +92,29 @@
         </div>
             <div id = "cat1_wrapper" class="form-group col-sm-1 text-center pt-4">
         <input type="button" id="filterBtn" class="btn btn-warning btn-xl btn-outline-dark fw-bold" value="필터 적용">
-                <input type="button" id="fBtn" class="btn btn-warning btn-xl btn-outline-dark fw-bold" value="필터 테스트">
             </div>
         </div>
 <script>
-    
-    $('#fBtn').click(function(){
-    var testJson = [{name : "이건", salary : 50000000},
-                    {name : "홍길동", salary : 1000000},
-                    {name : "임신구", salary : 3000000},
-                    {name : "이승룡", salary : 2000000}];
-    
-    var newJson = ncflist.filter(function(element){
-        //console.log(element[0]);
-        return element[0].Class2 == $('#cat1').val();
-    });
-    console.log("newObj");
-    console.log(newJson);
-
-    });
-        
-        
-        
     //버튼을 누르면 Auto를 ajax로 전송해 DB에서 해당 아이템 정보를 받아와 테이블에 출력
     $('#filterBtn').click(function(){
         var postdata = {
-            'Class2' : $('#cat1').val()
+            'Class2' : $('#cat1').val(),
+            'roomdata' : {{room}},
+            'ncfdata' : {{ncf}}
         }
-        
-  var roomJson = roomlist.filter(function(element){
-        //console.log(element[0]);
-        return element[0].Class2 == $('#cat1').val();
-    });
-    console.log("newObj");
-    console.log(roomJson);
-  var ncfJson = ncflist.filter(function(element){
-        //console.log(element[0]);
-        return element[0].Class2 == $('#cat1').val();
-    });
-    console.log("newObj");
-    console.log(ncfJson);
-
+        $.ajax({
+            type: 'POST',
+            url: "/category",
+            data: JSON.stringify(postdata),
+            dataType : 'JSON',
+            contentType: "application/json",
+            success: function(data){
+                alert('성공! 필터 데이터 값:' + data[1][0].Title)
                 
+                var arr = data;
                 var htmlCode_C = '';
                 var num_C = 1;
-                for(const item of roomJson.slice(0,8)){
+                for(const item of arr.slice(0,15)){
                 htmlCode_C += '<div class="col mb-5"> <!-- 각 아이템 박스 영역 (눈에 안보이는 공간 차지)기준 -->'
                 htmlCode_C +=  '<div class="card h-100"> <!-- 각 아이템 박스 (눈에 보이는)기준 -->'
                          
@@ -165,7 +143,7 @@
                 
                 var htmlCode_N = '';
                 var num_N = 1;
-                for(const item of ncfJson.slice(0,8)){
+                for(const item of arr.slice(-15)){
                 htmlCode_N += '<div class="col mb-5"> <!-- 각 아이템 박스 영역 (눈에 안보이는 공간 차지)기준 -->'
                 htmlCode_N +=  '<div class="card h-100"> <!-- 각 아이템 박스 (눈에 보이는)기준 -->'
                          
@@ -198,6 +176,13 @@
                 $('#NCF_area').empty();
                 $('#NCF_area').append(htmlCode_N);
                 
+
+            },
+            error: function(request, status, error){
+                alert('ajax 통신 실패');
+                //alert(error);
+            }
+        })
     })
 
 
@@ -244,7 +229,8 @@
 
 </script>
         
-     
+        
+        
 <script>
     $(function() { //화면 다 뜨면 시작
 
@@ -259,11 +245,11 @@
                 //var arr = JSON.parse(data);
 
 
-                roomlist = data;
+                var arr = data;
                 var htmlCode = '';
                 var num = 1;
 
-                for(const item of roomlist.slice(0,10)){
+                for(const item of arr){
                 htmlCode += '<div class="col mb-5"> <!-- 각 아이템 박스 영역 (눈에 안보이는 공간 차지)기준 -->'
                 htmlCode +=  '<div class="card h-100"> <!-- 각 아이템 박스 (눈에 보이는)기준 -->'
                          
@@ -316,11 +302,11 @@
                 //alert('성공! NCF 데이터 값:' + data[1][0].Title)
                 //var arr = JSON.parse(data);
 
-                ncflist = data;
+                var arr = data;
                 var htmlCode = '';
                 var num = 1;
 
-                for(const item of ncflist.slice(0,10)){
+                for(const item of arr){
                 htmlCode += '<div class="col mb-5"> <!-- 각 아이템 박스 영역 (눈에 안보이는 공간 차지)기준 -->'
                 htmlCode +=  '<div class="card h-100"> <!-- 각 아이템 박스 (눈에 보이는)기준 -->'
                          
@@ -358,7 +344,6 @@
     });
 
 </script>
-        
 
         
         <!-- Section-->

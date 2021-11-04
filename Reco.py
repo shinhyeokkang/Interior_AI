@@ -13,14 +13,14 @@ for gpu in gpus:
     
     
 # 2. 모델 불러오기
-model = tf.keras.models.load_model('cnn_model_i0003.h5')
+model = tf.keras.models.load_model('cnn_model_n0003.h5')#*************모델수정시*************
 
 class Recommendation():
     def reco_items(self,imgOrVal,New):
         client = MongoClient('mongodb://localhost:27017/')
-        db = client.ItemDB
+        db = client.ItemDB#*************모델수정시*************
         collection = db.ItemCollections
-        results = collection.find({},{"_id":0,"0":1, "1":1, "2":1,"3":1,"Item_url":1})
+        results = collection.find({},{"_id":0,"0":1, "1":1, "2":1,"3":1,"Item_url":1})#*************모델수정시*************
         client.close()
         #수정중 데이터프레임으로바꺼야댐
         total_data = pd.DataFrame(list(results))
@@ -63,7 +63,8 @@ class Recommendation():
         re = data.copy()
         re['Distance'] = 0
         for i in range(0,len(data)):
-            re.loc[i,'Distance'] = distance.euclidean(value,re.iloc[i,0:4])*10000
+            re.loc[i,'Distance'] = distance.euclidean(value,re.iloc[i,0:4])*10000#*************모델수정시*************
         re.sort_values(by=['Distance'], axis=0, inplace=True)
+        print(re[:30])
         print('Reco Distance Calculation Complete!')
         return re

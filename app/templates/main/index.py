@@ -51,17 +51,47 @@ def upload_file():
         templist = ncf.reco_items(item_id_list, 10000)#리턴: Item_id
         ncflist = list(map(int, templist))
         print('Item NCF 추천 성공!')
+        
+        
+        '''
+        #query 할 Item_url을 받아오는 코드
+        query_CNN_list = roomlist
+
+        #itemlist 를 MongoDB에서 받아오는 쿼리
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client.ItemDB#*************모델수정시*************
+        collection = db.ItemCollections
+        resultlist_CNN = []
+        for item in query_CNN_list[:30]:
+            result = collection.find({'Item_url':item}, {'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Class1':1,'Class2':1,'Class3':1, 'Class4':1})
+            resultlist_CNN.append(result)
+    
+        print('Room CNN DB find 성공!')
+        
+        #query 할 Item_id를 받아오는 코드
+        query_NCF_list = ncflist
+
+        #itemlist 를 MongoDB에서 받아오는 쿼리
+        resultlist_NCF = []
+        for item in query_NCF_list[:30]:
+            result = collection.find({'Item_id':item}, {'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Class1':1,'Class2':1,'Class3':1,'Class4':1})
+            resultlist_NCF.append(result)
+
+        print('Room NCF DB find 성공!')
+        client.close()        
+        print(resultlist_CNN[:5])
+        '''
         #Item사진 분석 - cnn
         #predVal = df[df['Item_id'].isin(item_id_list)].iloc[:,:4].values
         #cnnlist = list(cnn.reco_items(predVal,New=False).loc[:,'Item_url'])#리턴: Item_url 
 
-    return render_template('/shop/shop.html', room = roomlist, ncf=ncflist)
+    return render_template('/shop/shop.html', room = roomlist , ncf = ncflist)
     
 @main.route('/json', methods = ['GET'])
 def json_file():
     #itemlist 를 MongoDB에서 받아오는 쿼리
     client = MongoClient('mongodb://localhost:27017/')
-    db = client.ItemDB
+    db = client.ItemDB#*************모델수정시*************
     collection = db.ItemCollections
     results = collection.find({},{"_id":0,"Auto":1})
     client.close()
@@ -78,7 +108,7 @@ def query():
     print(queryName)
     #itemlist 를 MongoDB에서 받아오는 쿼리
     client = MongoClient('mongodb://localhost:27017/')
-    db = client.ItemDB
+    db = client.ItemDB#*************모델수정시*************
     collection = db.ItemCollections
     results = collection.find({"Auto":queryName},{'_id':0,'Item_id':1,'Item_url':1, 'Title':1, 'Company':1})
     client.close()
@@ -107,7 +137,6 @@ def query():
     df = pd.concat([df,df_new],ignore_index=True)
     #print("DataFrame 입니다\n", df, "DataFrame 입니다\n")
     '''
-    
     return jsonify(list_results[0])
 
 @main.route('/queryCNN', methods = ['POST'])
@@ -117,11 +146,11 @@ def queryCNN():
     print('queryCNN list[0:30] request 성공!')
     #itemlist 를 MongoDB에서 받아오는 쿼리
     client = MongoClient('mongodb://localhost:27017/')
-    db = client.ItemDB
+    db = client.ItemDB#*************모델수정시*************
     collection = db.ItemCollections
     resultlist_CNN = []
-    for item in query_list[:30]:
-        result = collection.find({'Item_url':item}, {'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1})
+    for item in query_list[:500]:
+        result = collection.find({'Item_url':item}, {'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Class1':1,'Class2':1,'Class3':1,'Class4':1})
         resultlist_CNN.append(result)
     client.close()
     
@@ -135,11 +164,11 @@ def queryNCF():
     print('queryNCF list[0:30] request 성공!')
     #itemlist 를 MongoDB에서 받아오는 쿼리
     client = MongoClient('mongodb://localhost:27017/')
-    db = client.ItemDB
+    db = client.ItemDB#*************모델수정시*************
     collection = db.ItemCollections
     resultlist_NCF = []
-    for item in query_list[:30]:
-        result = collection.find({"Item_id":item},{'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1})
+    for item in query_list[:500]:
+        result = collection.find({"Item_id":item},{'_id':0, 'Item_id':1, 'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Class1':1,'Class2':1,'Class3':1,'Class4':1})
         resultlist_NCF.append(result)
     client.close()
     
@@ -153,17 +182,18 @@ def category():
     print('선택된 category : ',queryName)
     
     client = MongoClient('mongodb://localhost:27017/')
-    db = client.ItemDB
+    db = client.ItemDB#*************모델수정시*************
     collection = db.ItemCollections
     
     roomlist = query['roomdata']
+    print('DB 접속완료!')
     resultlist_ALL = []
     for item in roomlist:
         result = collection.find({'Item_url':item, 'Class2':queryName},{'_id':0,'Item_id':1,'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Rate':1})
         if not result.count() == 0:
             resultlist_ALL.append(result)
             
-            if len(resultlist_ALL) == 20:
+            if len(resultlist_ALL) == 15:
                 print("CNN Added!")
                 break;
 
@@ -172,7 +202,7 @@ def category():
         result = collection.find({'Item_id':item, 'Class2':queryName},{'_id':0,'Item_id':1,'Item_url':1, 'Title':1, 'Company':1, 'Price':1, 'Rate':1})
         if not result.count() == 0:
             resultlist_ALL.append(result)
-            if len(resultlist_ALL) == 40:
+            if len(resultlist_ALL) == 30:
                 print("NCF Added!")
                 break;
             
